@@ -1,0 +1,68 @@
+<!-- templates/index.html -->
+{% extends "layout.html" %}
+{% block content %}
+
+<h1 class="my-4">NYISO Load Dashboard</h1>
+
+<form method="POST" class="form-inline mb-3 align-items-end">
+    <div class="form-group mr-3">
+        <label class="mr-2" for="zones">Zones:</label><br>
+        {% for zone in zones %}
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="zones" value="{{ zone }}"
+                       {% if zone in selected_zones %}checked{% endif %}>
+                <label class="form-check-label">{{ zone }}</label>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="form-group mr-3">
+        <label class="mr-2" for="start_date">Start Date:</label>
+        <input type="date" name="start_date" class="form-control" value="{{ start_date }}">
+    </div>
+
+    <div class="form-group mr-3">
+        <label class="mr-2" for="end_date">End Date:</label>
+        <input type="date" name="end_date" class="form-control" value="{{ end_date }}">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
+
+{% if graph_json %}
+    <div class="card mb-4">
+        <div class="card-body">
+            <div id="plot-div"></div>
+        </div>
+    </div>
+    <script>
+        var graphJSON = {{ graph_json|safe }};
+        Plotly.newPlot('plot-div', graphJSON.data, graphJSON.layout);
+    </script>
+
+    <h3>Metrics</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Zone</th>
+                <th>Average Load (MW)</th>
+                <th>Peak Load (MW)</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for zone, vals in metrics.items() %}
+            <tr>
+                <td>{{ zone }}</td>
+                <td>{{ vals.average_load|round(2) }}</td>
+                <td>{{ vals.peak_load|round(2) }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="alert alert-info" role="alert">
+        No data selected or available. Please select at least one zone and click "Update".
+    </div>
+{% endif %}
+
+{% endblock %}
