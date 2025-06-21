@@ -179,8 +179,6 @@ Contact
 
 For questions or support, please contact:
 
-GitHub: paulydeg
-
-Email: paulydeg@example.com
+pdegraf1@binghamton.edu
 
 Happy forecasting!
